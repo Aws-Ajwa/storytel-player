@@ -4,10 +4,11 @@ import { useTranslation } from 'react-i18next';
 interface ErrorStateProps {
   error: any;
   onRetry?: () => void;
+  retryLabel?: string;
   onLogout?: () => void;
 }
 
-function ErrorState({ error, onRetry, onLogout }: ErrorStateProps) {
+function ErrorState({ error, onRetry, retryLabel, onLogout }: ErrorStateProps) {
   const { t } = useTranslation();
   return (
     <div className="min-h-screen bg-black flex items-center justify-center">
@@ -24,7 +25,7 @@ function ErrorState({ error, onRetry, onLogout }: ErrorStateProps) {
             onClick={onRetry}
             className="bg-orange-600 hover:bg-orange-700 text-white px-6 py-2 rounded-md transition-colors font-medium"
           >
-            {t('errorState.tryAgain')}
+            {retryLabel ?? t('errorState.tryAgain')}
           </button>
         )}
         {onLogout && (

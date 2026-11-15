@@ -74,20 +74,18 @@ export function BookCard({ book, onBookSelect, onRemove, onQuickPlay }: BookCard
         )}
 
         {/* Quick Play Overlay Button */}
-        <div
-          onClick={(e) => {
-            if (onQuickPlay) {
-              onQuickPlay(e, book);
-            }
-          }}
-          className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center"
-        >
-          <div className="w-12 h-12 rounded-full bg-[#FF5100] text-white flex items-center justify-center shadow-xl shadow-[#FF5100]/40 transform scale-90 group-hover:scale-100 transition-transform active:scale-95">
-            <svg className="w-5 h-5 fill-current ml-0.5" viewBox="0 0 24 24">
-              <path d="M8 5v14l11-7z" />
-            </svg>
+        {book.abook && onQuickPlay && (
+          <div
+            onClick={(e) => onQuickPlay(e, book)}
+            className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center"
+          >
+            <div className="w-12 h-12 rounded-full bg-[#FF5100] text-white flex items-center justify-center shadow-xl shadow-[#FF5100]/40 transform scale-90 group-hover:scale-100 transition-transform active:scale-95">
+              <svg className="w-5 h-5 fill-current ml-0.5" viewBox="0 0 24 24">
+                <path d="M8 5v14l11-7z" />
+              </svg>
+            </div>
           </div>
-        </div>
+        )}
 
         {/* Format Badge (Audio / Ebook) */}
         {book.abook && (

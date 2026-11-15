@@ -156,7 +156,8 @@ export function SearchView({ query: propQuery }: SearchViewProps) {
   const handlePlayBook = (e: React.MouseEvent | null, bookId: string) => {
     if (e) e.stopPropagation();
     const targetBook = rawResults.find((b) => b.id === bookId) || (selectedBook?.id === bookId ? selectedBook : null);
-    const entity = targetBook ? searchResultToBookEntity(targetBook) : null;
+    if (!targetBook?.hasAbook) return;
+    const entity = searchResultToBookEntity(targetBook);
     navigate(`/player/${bookId}`, { state: { book: entity, autoPlay: true } });
   };
 

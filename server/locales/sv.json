@@ -39,6 +39,7 @@
     }
   },
   "player": {
+    "audioUnavailable": "Ljud är inte tillgängligt för den här titeln.",
     "chapters": "Ljudspår",
     "bookmarks": "Bokmärken",
     "addBookmark": "Lägg till bokmärke",
@@ -126,6 +127,8 @@
     "inLibrary": "I bokhyllan",
     "savedToLibrary": "Boken har lagts till i din bokhylla!",
     "listen": "Lyssna",
+    "read": "Läs",
+    "readInStorytel": "Öppna Storytel-appen på din mobil eller surfplatta, leta upp titeln och välj Läs.",
     "language": "Språk",
     "duration": "Längd",
     "narrator": "Uppläsare",

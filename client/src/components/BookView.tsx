@@ -10,6 +10,8 @@ import ConfirmRemoveBookModal from './ConfirmRemoveBookModal';
 import api from '../utils/api';
 import "../types/window.d.ts";
 
+const formatActionClassName = "px-7 py-3.5 bg-[#FF5100] hover:bg-[#ff641a] text-white rounded-full transition-all flex items-center gap-2 text-base font-bold shadow-lg shadow-[#FF5100]/30 hover:scale-105 active:scale-95";
+
 function BookView() {
     const {t, i18n} = useTranslation();
     const {bookId} = useParams();
@@ -19,9 +21,11 @@ function BookView() {
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState('');
     const [showFullDescription, setShowFullDescription] = useState(false);
+    const [readingHelpBookId, setReadingHelpBookId] = useState<string | null>(null);
     const [fetchedBook, setFetchedBook] = useState<BookShelfEntity | null>(null);
 
     const book: BookShelfEntity | null = location.state?.book || fetchedBook;
+    const showReadingHelp = readingHelpBookId === bookId;
 
     // description and language are not part of the bookshelf payload; they come
     // from the per-book book-details endpoint, fetched lazily below.
@@ -243,16 +247,28 @@ function BookView() {
 
                     {/* Action Buttons Row */}
                     <div className="flex items-center gap-3 mb-8 flex-wrap justify-center">
-                        {/* Play Button */}
-                        <button
-                            onClick={handlePlayBook}
-                            className="px-7 py-3.5 bg-[#FF5100] hover:bg-[#ff641a] text-white rounded-full transition-all flex items-center gap-2 text-base font-bold shadow-lg shadow-[#FF5100]/30 hover:scale-105 active:scale-95"
-                        >
-                            <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24">
-                                <path d="M8 5v14l11-7z"/>
-                            </svg>
-                            <span>{t('bookView.listen', 'Listen')}</span>
-                        </button>
+                        {book.abook && (
+                            <button type="button" onClick={handlePlayBook} className={formatActionClassName}>
+                                <svg aria-hidden="true" className="w-5 h-5 fill-current" viewBox="0 0 24 24">
+                                    <path d="M8 5v14l11-7z"/>
+                                </svg>
+                                <span>{t('bookView.listen', 'Listen')}</span>
+                            </button>
+                        )}
+                        {book.ebook && (
+                            <button
+                                type="button"
+                                onClick={() => setReadingHelpBookId(showReadingHelp ? null : bookId ?? null)}
+                                aria-expanded={showReadingHelp}
+                                aria-controls="book-reading-help"
+                                className={formatActionClassName}
+                            >
+                                <svg aria-hidden="true" className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                    <path d="M12 7a5 5 0 0 0-5-3H3v14h4a5 5 0 0 1 5 3m0-14a5 5 0 0 1 5-3h4v14h-4a5 5 0 0 0-5 3m0-14v14"/>
+                                </svg>
+                                <span>{t('bookView.read')}</span>
+                            </button>
+                        )}
 
                         {/* Save to Bookshelf Button */}
                         <button
@@ -295,16 +311,24 @@ function BookView() {
                         </button>
                     </div>
 
+                    {book.ebook && (
+                        <p id="book-reading-help" hidden={!showReadingHelp} className="mb-6 max-w-md text-center text-sm text-gray-300">
+                            {t('bookView.readInStorytel')}
+                        </p>
+                    )}
+
                     {/* Book Info */}
                     <div className="w-full max-w-md space-y-2 text-sm">
                         <div className="flex justify-between py-2 border-b border-gray-800">
                             <span className="text-gray-400">{t('bookView.language')}</span>
                             <span className="text-white">{language}</span>
                         </div>
-                        <div className="flex justify-between py-2 border-b border-gray-800">
-                            <span className="text-gray-400">{t('bookView.duration')}</span>
-                            <span className="text-white">{formatDuration(book.abook.time)}</span>
-                        </div>
+                        {book.abook && (
+                            <div className="flex justify-between py-2 border-b border-gray-800">
+                                <span className="text-gray-400">{t('bookView.duration')}</span>
+                                <span className="text-white">{formatDuration(book.abook.time)}</span>
+                            </div>
+                        )}
                         <div className="flex justify-between py-2 border-b border-gray-800">
                             <span className="text-gray-400">{t('bookView.category')}</span>
                             <span className="text-white flex items-center">

@@ -41,6 +41,7 @@
     "bookCount_many": "{{count}} książek"
   },
   "player": {
+    "audioUnavailable": "Wersja audio tego tytułu jest niedostępna.",
     "chapters": "Rozdziały",
     "bookmarks": "Zakładki",
     "addBookmark": "Dodaj zakładkę",
@@ -128,6 +129,8 @@
     "inLibrary": "W bibliotece",
     "savedToLibrary": "Dodano książkę do biblioteki!",
     "listen": "Słuchaj",
+    "read": "Czytaj",
+    "readInStorytel": "Otwórz aplikację Storytel na telefonie lub tablecie, znajdź ten tytuł i wybierz Czytaj.",
     "language": "Język",
     "duration": "Czas trwania",
     "narrator": "Lektor",

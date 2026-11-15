@@ -39,6 +39,7 @@
     }
   },
   "player": {
+    "audioUnavailable": "Audio is unavailable for this title.",
     "chapters": "Chapters",
     "bookmarks": "Bookmarks",
     "addBookmark": "Add bookmark",
@@ -126,6 +127,8 @@
     "inLibrary": "In Library",
     "savedToLibrary": "Book added to your library!",
     "listen": "Listen",
+    "read": "Read",
+    "readInStorytel": "Open the Storytel app on your phone or tablet, find this title, and choose Read.",
     "language": "Language",
     "duration": "Duration",
     "narrator": "Narrator",

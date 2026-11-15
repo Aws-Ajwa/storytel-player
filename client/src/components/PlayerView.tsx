@@ -28,10 +28,12 @@ function PlayerView() {
     const audio = useAudioContext();
 
     const [fetchedBook, setFetchedBook] = useState<BookShelfEntity | null>(null);
+    const [failedDetailsBookId, setFailedDetailsBookId] = useState<string | null>(null);
 
     // Reset fetched book details when switching to a different book
     useEffect(() => {
         setFetchedBook(null);
+        setFailedDetailsBookId(null);
     }, [bookId]);
 
     // Check if the central active book matches this route's bookId
@@ -65,6 +67,8 @@ function PlayerView() {
     // the player any other way (mini player, deep link) only loads the book.
     const autoPlayRequested = location.state?.autoPlay === true;
     const activeConsumableId = book?.book?.consumableId || bookId || '';
+    const isEbookOnly = !!book?.ebook && !book.abook;
+    const canLoadAudio = !isEbookOnly && (!!book || failedDetailsBookId === bookId);
 
     const [error, setError] = useState('');
     const [isLoadingBookData, setIsLoadingBookData] = useState(true);
@@ -115,6 +119,7 @@ function PlayerView() {
                 .catch((e) => {
                     if (!cancelled) {
                         console.error("Failed to fetch fallback book details:", e);
+                        setFailedDetailsBookId(bookId);
                     }
                 });
 
@@ -132,14 +137,14 @@ function PlayerView() {
     // resume playback the user has just paused.
     const lastBookIdRef = useRef<string | null>(null);
     useEffect(() => {
-        if (bookId) {
+        if (bookId && canLoadAudio) {
             const isNewBook = lastBookIdRef.current !== bookId;
             lastBookIdRef.current = bookId;
             const isAlreadyLoaded = audio.activeBookId === bookId && !isNewBook && !!audio.audioSrc;
             const autoPlay = autoPlayRequested && (isNewBook || !isAlreadyLoaded);
             audio.loadBook(book, bookId, autoPlay);
         }
-    }, [bookId, book, autoPlayRequested, audio.loadBook]);
+    }, [bookId, book, canLoadAudio, autoPlayRequested, audio.loadBook]);
 
     // Bookmarks hook
     const bookmarks = useBookmarks({
@@ -165,7 +170,7 @@ function PlayerView() {
     // Load book data (chapters and bookmarks)
     useEffect(() => {
         const loadBookData = async () => {
-            if (activeConsumableId) {
+            if (activeConsumableId && canLoadAudio) {
                 setIsLoadingBookData(true);
                 try {
                     await Promise.all([
@@ -186,7 +191,7 @@ function PlayerView() {
         return () => {
             document.title = 'Storytel Player';
         };
-    }, [activeConsumableId, book]);
+    }, [activeConsumableId, book, canLoadAudio]);
 
     // Check download status on mount
     useEffect(() => {
@@ -311,6 +316,14 @@ function PlayerView() {
             document.removeEventListener('keydown', handleKeyPress);
         };
     }, [audio.togglePlayPause, audio.skipForward, audio.skipBackward, audio.isPlaying]);
+
+    if (isEbookOnly) {
+        return <ErrorState error={t('player.audioUnavailable')} onRetry={() => navigate('/')} retryLabel={t('dashboard.title')}/>;
+    }
+
+    if (!book && failedDetailsBookId === bookId && audio.activeBookId === bookId && audio.error) {
+        return <ErrorState error={audio.error} onRetry={() => navigate('/')}/>;
+    }
 
     if (audio.isLoading || isLoadingBookData || !book) {
         return <LoadingState message={audio.isLoading ? t('player.loadingAudio') : t('player.loadingBookData')}/>;

@@ -39,6 +39,7 @@
     }
   },
   "player": {
+    "audioUnavailable": "Tämän teoksen ääniversio ei ole saatavilla.",
     "chapters": "Luvut",
     "bookmarks": "Kirjanmerkit",
     "addBookmark": "Lisää kirjanmerkki",
@@ -126,6 +127,8 @@
     "inLibrary": "Kirjastossa",
     "savedToLibrary": "Kirja lisätty kirjastoosi!",
     "listen": "Kuuntele",
+    "read": "Lue",
+    "readInStorytel": "Avaa Storytel-sovellus puhelimella tai tabletilla, etsi tämä kirja ja valitse Lue.",
     "language": "Kieli",
     "duration": "Kesto",
     "narrator": "Lukija",

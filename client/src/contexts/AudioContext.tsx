@@ -386,9 +386,12 @@ export function AudioProvider({ children }: { children: ReactNode }) {
       } catch (err: any) {
         if (requestId !== loadRequestIdRef.current) return;
         console.error('Failed to load audio stream:', err);
-        setError(err.response?.status === 403
+        const status = err.response?.status;
+        setError(status === 403
           ? i18n.t('player.accessDenied')
-          : err.response?.data?.error || err.message || i18n.t('player.loadError'));
+          : status === 410
+            ? i18n.t('player.audioUnavailable')
+            : err.response?.data?.error || err.message || i18n.t('player.loadError'));
         setIsLoading(false);
       }
     },
