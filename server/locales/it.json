@@ -181,6 +181,9 @@
     "cancelButton": "Annulla"
   },
   "download": {
+    "action": "Scarica",
+    "inProgress": "Download in corso…",
+    "availableOffline": "Disponibile offline",
     "cancelTitle": "Annulla Download",
     "cancelMessage": "Sei sicuro di voler annullare il download in corso?",
     "cancelWarning": "Il file parzialmente scaricato verrà eliminato.",

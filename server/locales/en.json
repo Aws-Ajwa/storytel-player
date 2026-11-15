@@ -181,6 +181,9 @@
     "cancelButton": "Cancel"
   },
   "download": {
+    "action": "Download",
+    "inProgress": "Downloading…",
+    "availableOffline": "Available offline",
     "cancelTitle": "Cancel Download",
     "cancelMessage": "Are you sure you want to cancel the download in progress?",
     "cancelWarning": "The partially downloaded file will be deleted.",

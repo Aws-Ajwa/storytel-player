@@ -85,7 +85,7 @@
       "dist/electron/**/*",
       "server/dist/**/*",
       "node_modules/**/*",
-      "downloads/**/*"
+      "!downloads/**/*"
     ],
     "mac": {
       "category": "public.app-category.audio",

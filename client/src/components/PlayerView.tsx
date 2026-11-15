@@ -13,6 +13,7 @@ import BookInfo from "./BookInfo";
 import DownloadCancelModal from "./DownloadCancelModal";
 import {BookShelfEntity} from "../interfaces/books";
 import {useAudioContext} from "../contexts/AudioContext";
+import {downloadsChanged, useBookDownload} from '../hooks/useBookDownload';
 import {useBookmarks} from "../hooks/useBookmarks";
 import {useChapters} from "../hooks/useChapters";
 import {useGotoModal} from "../hooks/useGotoModal";
@@ -74,8 +75,11 @@ function PlayerView() {
     const [isLoadingBookData, setIsLoadingBookData] = useState(true);
     const [showPlaybackSpeedModal, setShowPlaybackSpeedModal] = useState(false);
     const [showKeyOverlay, setShowKeyOverlay] = useState<'play' | 'pause' | 'forward' | 'backward' | null>(null);
-    const [isDownloaded, setIsDownloaded] = useState(false);
-    const [isDownloading, setIsDownloading] = useState(false);
+    const {isDownloaded, isDownloading, download} = useBookDownload(
+        isEbookOnly ? undefined : bookId,
+        activeConsumableId,
+        book,
+    );
     const [showDownloadCancelModal, setShowDownloadCancelModal] = useState(false);
 
     // Fetch fallback book details if not available
@@ -193,64 +197,14 @@ function PlayerView() {
         };
     }, [activeConsumableId, book, canLoadAudio]);
 
-    // Check download status on mount
-    useEffect(() => {
-        const checkDownloadStatus = async () => {
-            if (bookId) {
-                try {
-                    const {data: statusData} = await api.get(`/download-status/${bookId}`);
-                    setIsDownloaded(statusData.downloaded);
-                } catch (err) {
-                    console.error('Failed to check download status', err);
-                }
-            }
-        };
-
-        void checkDownloadStatus();
-    }, [bookId]);
-
-    // Handle download button click
     const handleDownloadClick = async () => {
         if (isDownloading || isDownloaded) {
             setShowDownloadCancelModal(true);
-        } else {
-            await handleDownload();
+            return;
         }
-    };
 
-    // Handle download
-    const handleDownload = async () => {
-        if (!bookId || isDownloading) return;
-
-        setIsDownloading(true);
-        try {
-            trackAction('User initiated download', { bookId: book?.id, bookName: book?.book?.name || "Unknown" });
-
-            const response = await api.post('/download', {
-                bookId,
-                consumableId: activeConsumableId,
-                book,
-            });
-
-            if (response && (response as any).data?.success) {
-                setIsDownloaded(true);
-            } else {
-                if ((response as any)?.data?.error !== 'Download cancelled') {
-                    setError((response as any)?.data?.error || t('download.failed'));
-                }
-            }
-        } catch (err: any) {
-            if (err?.response?.status === 403) {
-                setError(t('player.accessDenied'));
-                return;
-            }
-            const errorMsg = err?.data?.error || err?.response?.data?.error;
-            if (errorMsg !== 'Download cancelled' && errorMsg !== 'canceled') {
-                setError(errorMsg || err.message || t('download.failed'));
-            }
-        } finally {
-            setIsDownloading(false);
-        }
+        const downloadError = await download();
+        if (downloadError) setError(downloadError);
     };
 
     // Handle cancel download or delete file
@@ -263,11 +217,10 @@ function PlayerView() {
             if (isDownloading) {
                 trackAction('User cancelled download', { bookId });
                 await api.delete(`/download/${bookId}`);
-                setIsDownloading(false);
             } else if (isDownloaded) {
                 trackAction('User deleted downloaded book', { bookId });
                 await api.delete(`/downloaded-file/${bookId}`);
-                setIsDownloaded(false);
+                window.dispatchEvent(new Event(downloadsChanged));
             }
         } catch (err: any) {
             setError(err.response?.data?.error || err.message || t('download.operationFailed'));

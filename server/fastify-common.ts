@@ -945,6 +945,24 @@ fastify.get<{
   },
 );
 
+fastify.get(
+  "/api/downloaded-books",
+  { preHandler: fastify.authenticate },
+  async (_request, reply) => {
+    try {
+      const bookIds = new Set<string>();
+      for (const file of await fs.promises.readdir(DOWNLOADS_DIR, { withFileTypes: true })) {
+        if (!file.isFile()) continue;
+        const match = /^(?:.* \[(\d+)\]|(\d+))\.mp3$/.exec(file.name);
+        if (match) bookIds.add(match[1] ?? match[2]);
+      }
+      reply.send({ bookIds: [...bookIds] });
+    } catch (error: any) {
+      replyError(reply, error);
+    }
+  },
+);
+
 // Route per verificare lo stato del download
 fastify.get<{
   Params: { bookId: string };

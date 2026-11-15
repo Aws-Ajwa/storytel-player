@@ -181,6 +181,9 @@
     "cancelButton": "Peruuta"
   },
   "download": {
+    "action": "Lataa",
+    "inProgress": "Ladataan…",
+    "availableOffline": "Saatavilla offline-tilassa",
     "cancelTitle": "Peruuta lataus",
     "cancelMessage": "Haluatko varmasti peruuttaa meneillään olevan latauksen?",
     "cancelWarning": "Osittain ladattu tiedosto poistetaan.",

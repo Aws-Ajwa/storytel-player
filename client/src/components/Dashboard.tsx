@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import api from '../utils/api';
+import { downloadsChanged } from '../hooks/useBookDownload';
 import BookCard from './BookCard';
 import LoadingState from './LoadingState';
 import ErrorState from './ErrorState';
@@ -19,6 +20,7 @@ export function Dashboard({ onLogout, triggerLogout, setTriggerLogout }: Dashboa
   const { t } = useTranslation();
   const navigate = useNavigate();
   const [books, setBooks] = useState<BookShelfEntity[]>([]);
+  const [downloadedBookIds, setDownloadedBookIds] = useState<Set<string>>(new Set());
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
   const [filterStatus, setFilterStatus] = useState<number | null>(null);
@@ -33,6 +35,17 @@ export function Dashboard({ onLogout, triggerLogout, setTriggerLogout }: Dashboa
 
   useEffect(() => {
     loadBookshelf();
+    let downloadRequest = 0;
+    const refreshDownloads = () => {
+      const request = ++downloadRequest;
+      api.get<{ bookIds: string[] }>('/downloaded-books')
+        .then(({ data }) => {
+          if (request === downloadRequest) setDownloadedBookIds(new Set(data.bookIds));
+        })
+        .catch((error) => console.error('Failed to load downloaded books:', error));
+    };
+    refreshDownloads();
+    window.addEventListener(downloadsChanged, refreshDownloads);
     const handleUpdate = () => {
       setFilterStatus(null);
       setSearchQuery('');
@@ -40,6 +53,8 @@ export function Dashboard({ onLogout, triggerLogout, setTriggerLogout }: Dashboa
     };
     window.addEventListener('bookshelfUpdated', handleUpdate);
     return () => {
+      downloadRequest++;
+      window.removeEventListener(downloadsChanged, refreshDownloads);
       window.removeEventListener('bookshelfUpdated', handleUpdate);
     };
   }, []);
@@ -319,6 +334,7 @@ export function Dashboard({ onLogout, triggerLogout, setTriggerLogout }: Dashboa
                 <BookCard
                   key={book.abook?.id || book.id || book.book?.consumableId}
                   book={book}
+                  isDownloaded={!!book.abook && downloadedBookIds.has(String(book.abook.id || book.id))}
                   onBookSelect={handleBookSelect}
                   onRemove={setBookToRemove}
                   onQuickPlay={handleQuickPlay}

@@ -5,12 +5,13 @@ import { BookShelfEntity } from '../interfaces/books';
 
 interface BookCardProps {
   book: BookShelfEntity;
+  isDownloaded?: boolean;
   onBookSelect: (book: BookShelfEntity) => void;
   onRemove?: (book: BookShelfEntity) => void;
   onQuickPlay?: (e: React.MouseEvent, book: BookShelfEntity) => void;
 }
 
-export function BookCard({ book, onBookSelect, onRemove, onQuickPlay }: BookCardProps) {
+export function BookCard({ book, isDownloaded, onBookSelect, onRemove, onQuickPlay }: BookCardProps) {
   const { t } = useTranslation();
 
   const position = book.abookMark ? book.abookMark.pos : 0;
@@ -85,6 +86,19 @@ export function BookCard({ book, onBookSelect, onRemove, onQuickPlay }: BookCard
               </svg>
             </div>
           </div>
+        )}
+
+        {isDownloaded && (
+          <span
+            role="img"
+            aria-label={t('download.availableOffline')}
+            title={t('download.availableOffline')}
+            className="absolute bottom-2 right-2 flex h-7 w-7 items-center justify-center rounded-lg bg-black/80 text-emerald-300"
+          >
+            <svg aria-hidden="true" className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+              <path strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" d="M12 3v12m-4-4 4 4 4-4M5 16v4h14v-4" />
+            </svg>
+          </span>
         )}
 
         {/* Format Badge (Audio / Ebook) */}

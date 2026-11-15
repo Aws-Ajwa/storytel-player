@@ -8,9 +8,50 @@ import Navbar from './Navbar';
 import {addToBookshelfErrorKey, buildCoverUrl, localizedLanguageName, removeFromBookshelfErrorKey, truncateTitle} from '../utils/helpers';
 import ConfirmRemoveBookModal from './ConfirmRemoveBookModal';
 import api from '../utils/api';
+import {useBookDownload} from '../hooks/useBookDownload';
 import "../types/window.d.ts";
 
 const formatActionClassName = "px-7 py-3.5 bg-[#FF5100] hover:bg-[#ff641a] text-white rounded-full transition-all flex items-center gap-2 text-base font-bold shadow-lg shadow-[#FF5100]/30 hover:scale-105 active:scale-95";
+
+function BookDownloadButton({book, audioId}: {book: BookShelfEntity; audioId: string}) {
+    const {t} = useTranslation();
+    const {isDownloaded, isDownloading, download} = useBookDownload(
+        audioId,
+        book.book.consumableId || audioId,
+        book,
+    );
+    const [error, setError] = useState('');
+
+    const handleDownload = async () => {
+        setError('');
+        setError(await download() || '');
+    };
+
+    return (
+        <>
+            <button
+                type="button"
+                onClick={handleDownload}
+                disabled={isDownloading || isDownloaded}
+                aria-busy={isDownloading}
+                className={`px-5 py-3.5 rounded-full transition-colors flex items-center gap-2 text-sm font-semibold border ${
+                    isDownloaded
+                        ? 'bg-green-600/20 text-green-300 border-green-500/40'
+                        : 'bg-[#1A1A1A] text-white border-white/10 enabled:hover:bg-[#2C2C2E]'
+                }`}
+            >
+                <svg aria-hidden="true" className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                        d={isDownloaded ? 'M5 13l4 4L19 7' : 'M12 3v12m-4-4 4 4 4-4M5 16v4h14v-4'}/>
+                </svg>
+                <span aria-live="polite">
+                    {t(isDownloaded ? 'download.availableOffline' : isDownloading ? 'download.inProgress' : 'download.action')}
+                </span>
+            </button>
+            {error && <p role="alert" className="w-full text-center text-sm text-red-400">{error}</p>}
+        </>
+    );
+}
 
 function BookView() {
     const {t, i18n} = useTranslation();
@@ -25,6 +66,7 @@ function BookView() {
     const [fetchedBook, setFetchedBook] = useState<BookShelfEntity | null>(null);
 
     const book: BookShelfEntity | null = location.state?.book || fetchedBook;
+    const audioId = book?.abook ? String(book.abook.id || book.id) : undefined;
     const showReadingHelp = readingHelpBookId === bookId;
 
     // description and language are not part of the bookshelf payload; they come
@@ -164,7 +206,7 @@ function BookView() {
     };
 
     const handlePlayBook = () => {
-        navigate(`/player/${bookId}`, {state: {book, autoPlay: true}});
+        navigate(`/player/${audioId}`, {state: {book, autoPlay: true}});
     };
 
     if (isLoading) {
@@ -309,6 +351,9 @@ function BookView() {
                                 <span className="hidden group-hover/save:inline">{t('bookshelf.remove')}</span>
                             )}
                         </button>
+                        {audioId && (
+                            <BookDownloadButton key={audioId} audioId={audioId} book={book}/>
+                        )}
                     </div>
 
                     {book.ebook && (

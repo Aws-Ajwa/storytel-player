@@ -181,6 +181,9 @@
     "cancelButton": "Avbryt"
   },
   "download": {
+    "action": "Ladda ner",
+    "inProgress": "Laddar ner…",
+    "availableOffline": "Tillgänglig offline",
     "cancelTitle": "Avbryt nedladdning",
     "cancelMessage": "Är du säker på att du vill avbryta den pågående nedladdningen?",
     "cancelWarning": "Den delvis nedladdade filen kommer att tas bort.",

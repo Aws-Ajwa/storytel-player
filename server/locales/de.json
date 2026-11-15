@@ -181,6 +181,9 @@
     "cancelButton": "Abbrechen"
   },
   "download": {
+    "action": "Herunterladen",
+    "inProgress": "Wird heruntergeladen…",
+    "availableOffline": "Offline verfügbar",
     "cancelTitle": "Download abbrechen",
     "cancelMessage": "Möchten Sie den laufenden Download wirklich abbrechen?",
     "cancelWarning": "Die teilweise heruntergeladene Datei wird gelöscht.",

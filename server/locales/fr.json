@@ -181,6 +181,9 @@
     "cancelButton": "Annuler"
   },
   "download": {
+    "action": "Télécharger",
+    "inProgress": "Téléchargement…",
+    "availableOffline": "Disponible hors ligne",
     "cancelTitle": "Annuler le téléchargement",
     "cancelMessage": "Êtes-vous sûr de vouloir annuler le téléchargement en cours ?",
     "cancelWarning": "Le fichier partiellement téléchargé sera supprimé.",

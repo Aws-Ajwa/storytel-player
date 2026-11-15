@@ -183,6 +183,9 @@
     "cancelButton": "Anuluj"
   },
   "download": {
+    "action": "Pobierz",
+    "inProgress": "Pobieranie…",
+    "availableOffline": "Dostępne offline",
     "cancelTitle": "Anuluj pobieranie",
     "cancelMessage": "Czy na pewno chcesz anulować trwające pobieranie?",
     "cancelWarning": "Częściowo pobrany plik zostanie usunięty.",

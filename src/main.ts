@@ -1,4 +1,5 @@
 import {app, BrowserWindow} from 'electron';
+import {join} from 'node:path';
 import {WindowManager} from './modules/window';
 import {TrayManager} from './modules/tray';
 import {ServerManager} from './modules/server';
@@ -20,7 +21,8 @@ let ssoManager: SsoManager;
 async function initialize(): Promise<void> {
 
     process.env.IS_ELECTRON = 'true';
-    process.env.DOWNLOAD_PATH = app.getPath('downloads');
+    const downloadRoot = app.isPackaged ? app.getPath('userData') : app.getAppPath();
+    process.env.DOWNLOAD_PATH = join(downloadRoot, 'downloads');
     process.env.USER_DATA_PATH = app.getPath('userData');
 
     windowManager = new WindowManager(isDev, isDebug);
