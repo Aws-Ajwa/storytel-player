@@ -10,6 +10,7 @@ import GotoModal from "./GotoModal";
 import ChaptersModal from "./ChaptersModal";
 import PlayerControls from "./PlayerControls";
 import BookInfo from "./BookInfo";
+import StudyPanel from './StudyPanel';
 import DownloadCancelModal from "./DownloadCancelModal";
 import {BookShelfEntity} from "../interfaces/books";
 import {useAudioContext} from "../contexts/AudioContext";
@@ -237,7 +238,8 @@ function PlayerView() {
     // Keyboard shortcuts handler
     useEffect(() => {
         const handleKeyPress = (event: KeyboardEvent) => {
-            if (event.target instanceof HTMLInputElement || event.target instanceof HTMLTextAreaElement) {
+            if ((event.target instanceof HTMLElement && event.target.closest('input, textarea, select, button, a, [contenteditable="true"]')) ||
+                event.ctrlKey || event.metaKey || event.altKey) {
                 return;
             }
 
@@ -365,6 +367,10 @@ function PlayerView() {
                             onShowGotoModal={gotoModal.openModal}
                             onShowPlaybackSpeedModal={() => setShowPlaybackSpeedModal(true)}
                         />
+
+                        <StudyPanel key={activeConsumableId} consumableId={activeConsumableId}
+                            routeId={bookId || activeConsumableId} title={book.book.name}
+                            author={book.book.authorsAsString || ''}/>
 
                         {/* Modals */}
                         <PlaybackSpeedModal
